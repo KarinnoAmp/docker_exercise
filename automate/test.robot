@@ -3,7 +3,6 @@ Documentation    Test
 Library    OperatingSystem
 Library    AppiumLibrary
 
-
 *** Variables ***
 &{CAPACIBILITY}    url=http://172.27.149.216:4723/wd/hub
 ...    platformName=Android
