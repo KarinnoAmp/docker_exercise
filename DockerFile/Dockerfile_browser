@@ -1,19 +1,20 @@
 # call image
 FROM debian:stable-slim
 
-# install node and python
+# install node
 RUN apt-get update
-
 RUN apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get install -y nodejs
-
 RUN npx --yes playwright install-deps
 
+# install python
 RUN apt-get install -y python3-pip
 
-# install library
+# install python library
 ADD requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 RUN rfbrowser init
 RUN rm requirements.txt
+
+CMD [ "/bin/bash" ]
