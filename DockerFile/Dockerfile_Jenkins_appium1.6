@@ -4,16 +4,16 @@ FROM debian:stable-slim
 LABEL platform="linux/amd64"
 
 # install required packages (curl, jdk, git, python, fontconfig)
-RUN apt-get update && \
-    apt-get install -y curl git python3-pip imagemagick openjdk-11-jre fontconfig
+RUN apt-get update
+RUN apt-get install -y curl git python3-pip imagemagick openjdk-11-jre fontconfig
 
 # install python library
 RUN pip3 install robotframework==5.0 robotframework-appiumlibrary==1.6
 
 # install jenkins
-RUN curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null && \
-    echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | tee /etc/apt/sources.list.d/jenkins.list > /dev/null && \
-    apt-get update && \
-    apt-get install -y jenkins
+RUN curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+RUN echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+RUN apt-get update
+RUN apt-get install -y jenkins
 
 CMD [ "jenkins" ]
