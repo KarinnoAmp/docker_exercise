@@ -3,7 +3,7 @@ FROM debian:stable-slim
 
 # install node
 RUN apt-get update
-RUN apt-get install -y curl
+RUN apt-get install -y curl openssh-server
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get install -y nodejs
 RUN npx --yes playwright install-deps
