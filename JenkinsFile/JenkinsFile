@@ -1,15 +1,58 @@
 pipeline {
-    agent any
+    agent none
 
     stages {
-        stage('Pull Code') {
+        stage('Checkout git repo') {
+            agent {
+                label 'jenkins-server'
+            }
             steps {
-                checkout scmGit(branches: [[name: '*/master']], extensions: [cleanBeforeCheckout(), [$class: 'RelativeTargetDirectory', relativeTargetDir: '/automate']], userRemoteConfigs: [[credentialsId: '4e956d49-ee74-4911-85bf-df9ff875f12f', url: 'https://git.matador.ais.co.th/ate-vdo/ais-playbox.git']])
+                checkout scmGit(branches: [[name: '*/master']], extensions: [cleanBeforeCheckout(), [$class: 'RelativeTargetDirectory', relativeTargetDir: '/automate/arcadia.automate.buffet']], userRemoteConfigs: [[credentialsId: 'jenkins-server', url: 'git@bitbucket.org:arcadiasoftware/arcadia.automate.buffet.git']])
+                checkout scmGit(branches: [[name: '*/master']], extensions: [cleanBeforeCheckout(), [$class: 'RelativeTargetDirectory', relativeTargetDir: '/automate/tmp.automate.robot.ui.testing']], userRemoteConfigs: [[credentialsId: 'jenkins-server', url: 'git@bitbucket.org:arcadiasoftware/tmp.automate.robot.ui.testing.git']])
             }
         }
-        stage('Execute Test') {
+        stage('Clean result folder') {
+            agent {
+                label 'jenkins-server'
+            }
+            steps{
+                sh 'rm -rf /result/*'
+            }
+        }
+        stage('Run Login test') {
+            agent {
+                label 'robotframework-browser'
+            }
             steps {
-                sh 'robot -d "/Result" --nostatusrc --dryrun /automate/TestSuite'
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh 'robot -e On-Hold -o Login.xml -d /result -v HEAD_LESS:True /automate/tmp.automate.robot.ui.testing/TestSuites/TMP_Login.robot'
+                }
+            }
+        }
+        stage('Run LowCostAirlineBoolingList test') {
+            agent {
+                label 'robotframework-browser'
+            }
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    sh 'robot -e On-Hold -o LowCostBookingList.xml -d /result -v HEAD_LESS:True /automate/tmp.automate.robot.ui.testing/TestSuites/PrimarySearch/SelfBooking/Domestic/TMP_Self_Search_Domestic.robot'
+                }
+            }
+        }
+        stage('Merge result') {
+            agent {
+                label 'robotframework-browser'
+            }
+            steps {
+                sh 'rebot -o /result/output.xml -l /result/log.html -r /result/report.html /result/*.xml'
+            }
+        }
+        stage('Build test report') {
+            agent {
+                label 'jenkins-server'
+            }
+            steps {
+                robot archiveDirName: 'robot-plugin', logFileName: 'log.html', outputFileName: 'output.xml', outputPath: '/result', overwriteXAxisLabel: '', passThreshold: 70.0, reportFileName: 'report.html', unstableThreshold: 50.0
             }
         }
     }
