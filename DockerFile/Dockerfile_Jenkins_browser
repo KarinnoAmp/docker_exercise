@@ -3,7 +3,7 @@ LABEL platform="linux/amd64"
 
 # install required packages (curl, jdk, git, python, fontconfig, nodejs)
 RUN apt-get update
-RUN apt-get install -y git curl python3-pip openjdk-11-jre fontconfig
+RUN apt-get install -y git curl python3-pip openjdk-11-jre wget nano
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get install -y nodejs
 RUN npx --yes playwright install-deps
@@ -17,9 +17,7 @@ RUN rfbrowser init
 RUN rm requirements.txt
 
 # install jenkins
-RUN curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
-RUN echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-RUN apt-get update
-RUN apt-get install -y jenkins
+RUN wget https://get.jenkins.io/war-stable/2.387.3/jenkins.war
 
-CMD [ "jenkins" ]
+# CMD [ "jenkins" ]
+CMD [ "java", "-Dhudson.model.DirectoryBrowserSupport.CSP", "-jar", "jenkins.war" ]
