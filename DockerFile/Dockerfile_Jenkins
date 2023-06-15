@@ -3,7 +3,7 @@ LABEL platform="linux/amd64"
 
 # install tools
 RUN apt-get update
-RUN apt-get install -y git curl nano openssh-server wget openjdk-11-jre
+RUN apt-get install -y git curl nano openssh wget openjdk-11-jre
 
 # install jenkins
 RUN wget https://get.jenkins.io/war-stable/2.387.3/jenkins.war

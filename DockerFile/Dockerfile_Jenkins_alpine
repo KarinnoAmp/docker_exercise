@@ -2,7 +2,7 @@ FROM alpine:latest
 LABEL platform="linux/amd64"
 # install tools
 RUN apk update
-RUN apk add ttf-dejavu git nano wget openjdk11-jre
+RUN apk add ttf-dejavu git nano wget openjdk11-jre openssh
 # install jenkins
 RUN wget https://get.jenkins.io/war-stable/2.387.3/jenkins.war
 CMD [ "java", "-Dhudson.model.DirectoryBrowserSupport.CSP", "-jar", "jenkins.war"]
